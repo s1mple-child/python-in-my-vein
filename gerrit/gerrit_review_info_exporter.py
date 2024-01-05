@@ -30,8 +30,9 @@ def parse_json_from_file(json_file_full_path):
     """
     json_data = []
     # get every line of json file
-    for line in open(json_file_full_path, 'rb'):
-        json_data.append(json.loads(line))
+    with open(json_file_full_path, 'rb') as file_handler:
+        for line in file_handler:
+            json_data.append(json.loads(line))
 
     return json_data
 
@@ -152,7 +153,7 @@ reviewers_list, project_name, branch_name, target_file_full_path):
 
     # because all given lists have same length, select one of them and itearate all given lists
     for i, key in enumerate(reviewed_file_list):
-        if formatted_start_date <= key <= formatted_end_date:
+        if formatted_start_date <= reviewed_date_list[i] <= formatted_end_date:
             print('Writing review data to target excel which sheet name is Review Info. The ref is ' + patch_set_num_list[i])
             # create pandas dataframe
             df = pd.DataFrame({'review message': [reviewed_messages_list[i]],
