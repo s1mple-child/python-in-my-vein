@@ -13,13 +13,13 @@ Step 3: write data to excel or other types of files you want
 '''
 import json
 import datetime
+from datetime import datetime, timedelta
 import re
-import pandas as pd
 import sys
+import pandas as pd
 import openpyxl
 import requests
 from openpyxl import load_workbook
-from datetime import datetime, timedelta
 
 
 # parse json source file and append parsed data to a list
@@ -120,7 +120,7 @@ def find_review_data_per_change(gerrit_instance_ip_addr, change_number):
                 # remove microseconds before set value to raw_review_time, then change timezone to local timezone use datetime.timedelta
                 raw_review_time = datetime.strptime(comment_response_json[key][i]['updated'], '%Y-%m-%d %H:%M:%S.000%f').replace(microsecond=0)
                 # change raw_review_time timezone to local timezone
-                local_review_time = raw_review_time + datetime.timedelta(hours=8)
+                local_review_time = raw_review_time + timedelta(hours=8)
                 change_review_time_list.append(local_review_time)
                 # comment messages list
                 comment_message = comment_response_json[key][i]['message']
@@ -152,8 +152,8 @@ def write_result_lists_to_target(start_date, end_date, reviewed_date_list,
     formatted_end_date = datetime.strptime(end_date, '%Y-%m-%d')
 
     # because all given lists have same length, select one of them and itearate all given lists
-    for i in range(len(reviewed_file_list)):
-        if formatted_start_date <= reviewed_date_list[i] <= formatted_end_date:
+    for i, key in enumerate(reviewed_file_list):
+        if formatted_start_date <= key <= formatted_end_date:
             print('Writing review data to target excel which sheet name is Review Info. The ref is ' + patch_set_num_list[i])
             # create pandas dataframe
             df = pd.DataFrame({'review message': [reviewed_messages_list[i]],
@@ -184,6 +184,13 @@ def write_result_lists_to_target(start_date, end_date, reviewed_date_list,
 
 # the entrance of file
 def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, gerrit_instance_ip_addr, start_date, end_date):
+    """
+    :param: json_file_full_path: full path of gerrit source json file
+    :param: target_file_full_path: full path of target file
+    :param: gerrit_instance_ip_addr: gerrit ip address
+    :param: start_date: start date
+    :param: end_date: end date
+    """
     source_gerrit_json_data = parse_json_from_file(json_file_full_path)
     for index in range(len(source_gerrit_json_data) - 1):
         # get data of change
@@ -195,8 +202,8 @@ def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, ger
 
         # get all lists of change
         patch_set_data = source_gerrit_json_data[index]['patchSets']
-        for i in range(len(patch_set_data)):
-            if 'comments' in patch_set_data[i].keys():
+        for count, key in enumerate(patch_set_data):
+            if 'comments' in key:
                 change_reviewed_files_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[0]
                 change_reviewers_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[1]
                 change_patch_set_num_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[2]
