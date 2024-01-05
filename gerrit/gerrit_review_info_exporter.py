@@ -152,7 +152,7 @@ reviewers_list, project_name, branch_name, target_file_full_path):
     formatted_end_date = datetime.strptime(end_date, '%Y-%m-%d')
 
     # because all given lists have same length, select one of them and itearate all given lists
-    for i, key in enumerate(reviewed_file_list):
+    for i, _ in enumerate(reviewed_file_list):
         if formatted_start_date <= reviewed_date_list[i] <= formatted_end_date:
             print('Writing review data to target excel which sheet name is Review Info. The ref is ' + patch_set_num_list[i])
             # create pandas dataframe
@@ -202,7 +202,7 @@ def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, ger
 
         # get all lists of change
         patch_set_data = source_gerrit_json_data[index]['patchSets']
-        for key in enumerate(patch_set_data):
+        for _, key in enumerate(patch_set_data):
             if 'comments' in key:
                 change_reviewed_files_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[0]
                 change_reviewers_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[1]
