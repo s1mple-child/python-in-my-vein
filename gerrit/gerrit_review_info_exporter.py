@@ -12,17 +12,22 @@ Step 2: parse json source file
 Step 3: write data to excel or other types of files you want
 '''
 import json
-import requests
 import datetime
 import re
 import pandas as pd
 import sys
 import openpyxl
+import requests
 from openpyxl import load_workbook
+from datetime import datetime, timedelta
 
 
 # parse json source file and append parsed data to a list
 def parse_json_from_file(json_file_full_path):
+    """
+    :param json_file_full_path: full path of gerrit json file
+    :return: json_data: list of data that read from json file
+    """
     json_data = []
     # get every line of json file
     for line in open(json_file_full_path, 'rb'):
@@ -33,6 +38,13 @@ def parse_json_from_file(json_file_full_path):
 
 # get some info from change list like project name, branch name, etc
 def get_data_from_change(change_list):
+    """
+    :param change_list: list that contains change data
+    :return: project_name: name of project
+    :return: branch_name: name of branch
+    :return: change_status: status of change
+    :return: change_number: number of change
+    """
     project_name = change_list['project']
     branch_name = change_list['branch']
     change_status = change_list['status']
@@ -44,6 +56,10 @@ def get_data_from_change(change_list):
 # get review data use gerrit REST API(https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-comment)
 # parse response json and create some lists for writing target excel as data source of pandas dataframe
 def find_review_data_per_change(gerrit_instance_ip_addr, change_number):
+    """
+    :param gerrit_instance_ip_addr: ip address of gerrit
+    :param change number: number of change 
+    """
     # predefined some lists and append target data to them
     change_reviewed_files_list = []
     change_reviewers_list = []
@@ -204,6 +220,12 @@ def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, ger
 # this will make difference between patch set uploader and owner of a change
 # we will request via another API(https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail)
 def find_patch_set_uploader(gerrit_instance_ip_addr, change_number, patch_set_number):
+    """
+    :param gerrit_instance_ip_addr: ip address of gerrit
+    :param change_number: number of change
+    :param patch_set_number: number of patchset
+    :return: patch_set_uploader: uploader of patchset
+    """
     gerrit_user_name = 'admin'
     gerrit_http_cred = 'http_passwd'
     # request via API
@@ -228,6 +250,11 @@ def find_patch_set_uploader(gerrit_instance_ip_addr, change_number, patch_set_nu
 
 # parse inline messages: find specific codes in every inline message and convert these codes to its details
 def parse_inline_messages(inline_message):
+    """
+    :param inline_message: inline message
+    :return: actually_mean_severity_level: the complete meaning of severity level
+    :return: actually_mean_problem_type: the complete meaning of problem type
+    """
     # set inline message pattern and check if inline message is corresponding its pattern
     re_pattern = '\\[([a-zA-Z]+),([a-zA-Z]+)\\]'
     check_pattern_result = re.search(re_pattern, inline_message)
@@ -260,6 +287,9 @@ def parse_inline_messages(inline_message):
 
 # insert index number in first column and set border in target file
 def write_index_n_set_border(target_file_full_path):
+    """
+    :param target_file_full_path: full path of target file
+    """
     full_df = pd.DataFrame(pd.read_excel(target_file_full_path, sheet_name='Review Info'))
     full_df.index += 1
     with pd.ExcelWriter(target_file_full_path, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
@@ -269,6 +299,9 @@ def write_index_n_set_border(target_file_full_path):
 
 # set width of all columns
 def set_columns_width(target_file_full_path):
+    """
+    :param target_file_full_path: full path of target file
+    """
     wb = load_workbook(filename=target_file_full_path)
     for sheet_name in wb.sheetnames:
         for col in wb[sheet_name].columns:
@@ -278,11 +311,11 @@ def set_columns_width(target_file_full_path):
                 # set column to a specific width number
                 if column == 'A':
                     wb[sheet_name].column_dimensions[column].width = 5
-                elif column == 'B' or column == 'D':
+                elif column in('B', 'D'):
                     wb[sheet_name].column_dimensions[column].width = 55
-                elif column == 'E' or column == 'G':
+                elif column in ('E', 'G'):
                     wb[sheet_name].column_dimensions[column].width = 10
-                elif column == 'F' or column == 'H' or column == 'I' or column == 'J':
+                elif column in ('F', 'H', 'I', 'J'):
                     wb[sheet_name].column_dimensions[column].width = 15
                 else:
                     wb[sheet_name].column_dimensions[column].width = 23
@@ -307,6 +340,9 @@ def set_columns_width(target_file_full_path):
 
 # delete empty sheet
 def delete_empty_sheet(target_file_full_path):
+    """
+    :param target_file_full_path: full path of target file
+    """
     wb = load_workbook(filename=target_file_full_path)
     for sheet_name in wb.sheetnames:
         if wb[sheet_name].max_column == 1:
