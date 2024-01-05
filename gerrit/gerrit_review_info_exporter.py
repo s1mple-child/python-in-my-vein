@@ -141,11 +141,10 @@ def find_review_data_per_change(gerrit_instance_ip_addr, change_number):
 
 # write review data with several lists created in find_review_data_per_change to target file
 # we also use date as parameters to filter data between two dates and write these data to target
-def write_result_lists_to_target(start_date, end_date, reviewed_date_list, 
-                                patch_set_num_list, reviewed_messages_list, reviewed_file_list, 
-                                line_num_reviewed_file_list, liline_message_problem_type_list, 
-                                inline_message_severity_level_list, change_status, patch_set_uploader_list, 
-                                reviewers_list, project_name, branch_name, target_file_full_path):
+def write_result_lists_to_target(start_date, end_date, reviewed_date_list, patch_set_num_list, 
+reviewed_messages_list, reviewed_file_list, line_num_reviewed_file_list, liline_message_problem_type_list, 
+inline_message_severity_level_list, change_status, patch_set_uploader_list, 
+reviewers_list, project_name, branch_name, target_file_full_path):
     # the format of start_date and end_date is YYYY-mm-dd
     # convert two string date values to datetime format
     formatted_start_date = datetime.strptime(start_date, '%Y-%m-%d')
@@ -202,7 +201,7 @@ def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, ger
 
         # get all lists of change
         patch_set_data = source_gerrit_json_data[index]['patchSets']
-        for count, key in enumerate(patch_set_data):
+        for key in enumerate(patch_set_data):
             if 'comments' in key:
                 change_reviewed_files_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[0]
                 change_reviewers_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[1]
@@ -215,10 +214,9 @@ def parse_n_write_data_to_target(json_file_full_path, target_file_full_path, ger
                 inline_message_problem_type_list = find_review_data_per_change(gerrit_instance_ip_addr, change_number)[8]
                 # write results to target file
                 write_result_lists_to_target(start_date, end_date, change_review_time_list, change_patch_set_num_list, 
-                                             change_comment_messages_list, change_reviewed_files_list, change_reviewed_line_num_list, 
-                                             inline_message_problem_type_list, inline_message_severity_level_list, change_status, 
-                                             change_patch_set_uploaders_list, change_reviewers_list, project_name, branch_name, 
-                                             target_file_full_path)
+                change_comment_messages_list, change_reviewed_files_list, change_reviewed_line_num_list, 
+                inline_message_problem_type_list, inline_message_severity_level_list, change_status, 
+                change_patch_set_uploaders_list, change_reviewers_list, project_name, branch_name, target_file_full_path)
                 break
 
 
