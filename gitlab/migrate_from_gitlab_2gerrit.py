@@ -444,10 +444,10 @@ def set_admin_username_n_http_cred(gerrit_ip):
     """
     admin_user_name = ''
     admin_http_cred = ''
-    if gerrit_ip = 'gerrit.ip.addr.1':
+    if gerrit_ip == 'gerrit.ip.addr.1':
         admin_user_name = 'user1'
         admin_http_cred = 'http_cred1'
-    elif gerrit_ip = 'gerrit.ip.addr.2':
+    elif gerrit_ip == 'gerrit.ip.addr.2':
         admin_user_name = 'user2'
         admin_http_cred = 'http_cred2'
     
