@@ -6,7 +6,7 @@ author: s1mple-child
 import json
 import sys
 import requests
-from migrate_from_gitlab_2gerrit import *
+from migrate_from_gitlab_2gerrit import create_access_session, set_gerrit_port
 
 
 # find changed files via gerrit REST API
