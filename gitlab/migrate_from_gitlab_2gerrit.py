@@ -318,7 +318,7 @@ def find_group_in_gitlab(gitlab_ip, group_name):
     :return: group_id: group id of given group
     """
     # set gitlab access token
-    gitlab_access_token = set_gitlab_access_token(gitlab_ip)
+    gitlab_access_token = set_access_token_gitlab(gitlab_ip)
     # request via gitlab REST API
     group_finding_response = requests.get('http://' + gitlab_ip + '/api/v4/groups?private_token=' + gitlab_access_token 
     + '&search=' + group_name).text
