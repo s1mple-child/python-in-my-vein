@@ -113,7 +113,7 @@ def create_separate_project_in_gerrit(gerrit_ip, group_name, project_admin, proj
         project_finding_response = find_project_in_gerrit(gerrit_ip, project_full_name)
         if len(json.loads(project_finding_response)) != 0:
             # project already existed
-            pring(project_full_name + ' is already existed.')
+            print(project_full_name + ' is already existed.')
         else:
             # project not found
             print('Creating ' + project_full_name + ' in gerrit.')
@@ -147,7 +147,7 @@ def create_access_rights_in_parent(gerrit_ip, parent_project_name, group_owner, 
     massedit.edit_files(source_json, ["re.sub('Team-Group-UUID', '" + parent_group_id + "', line)"], dry_run=False)
     massedit.edit_files(source_json, ["re.sub('Service-Users-UUID', '" + service_users_group_id + "', line)"], dry_run=False)
     # read json with changed values of group UUID
-    with open(access_rights_json_full_path) as f:
+    with open(access_rights_json_full_path, encoding='utf-8') as f:
         data = json.loads(f.read())
     # set access right with json data
     session = create_access_session(gerrit_ip)
@@ -155,7 +155,7 @@ def create_access_rights_in_parent(gerrit_ip, parent_project_name, group_owner, 
         parent_project_name = parent_project_name.replace('/', '%2F')
     access_set_response = session.post('http://' + gerrit_ip + ':' + gerrit_port + '/a/projects/' + parent_project_name + '/access', 
     json=data).text.replace(')]}\'', '')
-    project_access_revision = json.loads(response)["revision"]
+    project_access_revision = json.loads(access_set_response)["revision"]
     print('Access rights rights applied. The revision of access right is ' + project_access_revision)
 
 
@@ -285,7 +285,7 @@ def find_user_id_in_gerrit(gerrit_ip, member_name):
     gerrit_port = set_gerrit_port(gerrit_ip)
     http_session = create_access_session(gerrit_ip)
     # request for user via gerrit REST API
-    user_response = session.get('http://' + gerrit_ip + ':' + gerrit_port + '/accounts/' + member_name).text.replace(')]}\'', '')
+    user_response = http_session.get('http://' + gerrit_ip + ':' + gerrit_port + '/accounts/' + member_name).text.replace(')]}\'', '')
     account_id = json.loads(user_response)['_account_id']
     return account_id
 
@@ -318,7 +318,7 @@ def find_group_in_gitlab(gitlab_ip, group_name):
     :return: group_id: group id of given group
     """
     # set gitlab access token
-    gitlab_access_token = set_gitlab_access_token()
+    gitlab_access_token = set_gitlab_access_token(gitlab_ip)
     # request via gitlab REST API
     group_finding_response = requests.get('http://' + gitlab_ip + '/api/v4/groups?private_token=' + gitlab_access_token 
     + '&search=' + group_name).text
@@ -376,7 +376,7 @@ def find_project_in_gitlab(gitlab_ip, gerrit_ip, group_name, project_admin):
         if not json.loads(projects_under_group_response):
             break
         # iterate project and create project in gerrit
-        for i in range(len(response_json)):
+        for i in range(len(json.loads(projects_under_group_response))):
             project_name = json.loads(projects_under_group_response)[i]['name']
             print('Project ' + project_name + ' is under ' + group_name + ' of gitlab.')
             create_project_in_gerrit(gerrit_ip, parent_group_name, group_name, project_name, project_admin)
@@ -432,6 +432,26 @@ def set_access_token_gitlab(gitlab_ip):
         gitlab_access_token = 'token_2'
 
     return gitlab_access_token
+
+
+# set admin user name and http credential
+def set_admin_username_n_http_cred(gerrit_ip):
+    """
+    set gerrit system administrator username and http credential
+    :param gerrit_ip: gerrit ip address
+    :return: admin_user_name: username of gerrit system administrator
+    :return: admin_http_cred: http credential of this gerrit administrator
+    """
+    admin_user_name = ''
+    admin_http_cred = ''
+    if gerrit_ip = 'gerrit.ip.addr.1':
+        admin_user_name = 'user1'
+        admin_http_cred = 'http_cred1'
+    elif gerrit_ip = 'gerrit.ip.addr.2':
+        admin_user_name = 'user2'
+        admin_http_cred = 'http_cred2'
+    
+    return admin_user_name, admin_http_cred
 
 
 """
