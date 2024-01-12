@@ -264,7 +264,7 @@ def check_project_create_para(gitlab_ip, gerrit_ip, group_name, project_admin, p
     :param project_admin: admin username of project
     :param project_create_para: all or a list contains all projects need to create in gerrit
     """
-    if project_create_para = 'all':
+    if project_create_para == 'all':
         # create all projects with given gitlab group in gerrit
         total_created_project = find_project_in_gitlab(gitlab_ip, gerrit_ip, group_name, project_admin)
         print('Total number of created projects is: ' + str(total_created_project))
