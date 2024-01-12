@@ -1,0 +1,103 @@
+{
+    "add": {
+        "refs/heads/*": {
+            "permissions": {
+                "label-Code-Review": {
+                    "label": "Code-Review",
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false,
+                            "min": -1,
+                            "max": 1
+                        }
+                    }
+                },
+                "read": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        },
+                        "Service-Users-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                },
+                "create": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                },
+                "forgeCommitter": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                },
+                "delete": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                },
+                "push": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                }
+            }
+        },
+        "refs/heads/master": {
+            "permissions": {
+                "delete": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "BLOCK",
+                            "force": false
+                        }
+                    }
+                }
+            }
+        },
+        "refs/tags/*": {
+            "permissions": {
+                "forgeCommitter": {
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                },
+                "push": {
+                    "exclusive": true,
+                    "rules": {
+                        "Team-Group-UUID": {
+                            "action": "ALLOW",
+                            "force": false
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
