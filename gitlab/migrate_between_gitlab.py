@@ -90,7 +90,7 @@ def create_project_in_target_gitlab(gitlab_ip, group_id, project_name):
     :param group_id: group id in gitlab
     :param project_name: project name in gitlab
     """
-    gitlab_access_token = set_access_token_gitlab(source_gitlab_ip)
+    gitlab_access_token = set_access_token_gitlab(gitlab_ip)
     requests.post('http://' + gitlab_ip + '/api/v4/projects?access_token=' + gitlab_access_token 
     + '&name=' + project_name + '&namespace_id=' + str(group_id)+ '&visibility=internal')
 
